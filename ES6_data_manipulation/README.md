@@ -1,3 +1,4 @@
+Resources
 In this project, I will be learning about the following:
 
 Array:
