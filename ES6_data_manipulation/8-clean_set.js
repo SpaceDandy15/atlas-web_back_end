@@ -3,10 +3,11 @@ function cleanSet(set, startString = '') {
     return ''; // Return empty string if startString is not a string
   }
 
-  return [...set]
+  const result = [...set]
     .filter(item => typeof item === 'string' && item.startsWith(startString)) // Ensure item is a string
-    .map(item => item.slice(startString.length))
-    .join('-');
+    .map(item => item.slice(startString.length));
+
+  return result.length === 0 ? '' : result.join('-');
 }
 
 export default cleanSet;
