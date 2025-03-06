@@ -1,8 +1,8 @@
-function cleanSet(set, startString) {
-    return [...set]
-    .filter((item) => item.startsWith(startString))
-    .map((item) => item.slice(startString.length))
+function cleanSet(set, startString = '') {
+  return [...set]
+    .filter(item => item.startsWith(startString))
+    .map(item => item.slice(startString.length))
     .join('-');
-  }
+}
 
-  export default cleanSet;
+export default cleanSet;
