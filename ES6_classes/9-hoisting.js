@@ -39,4 +39,4 @@ const class2020 = new HolbertonClass(2020, 'San Francisco');
 const student1 = new StudentHolberton('Guillaume', 'Salva', class2020);
 const student2 = new StudentHolberton('John', 'Doe', class2020);
 const student3 = new StudentHolberton('Albert', 'Clinton', class2019);
-const student4 = ne
+const student4 = new StudentHolberton('Donald', 'Bush', class2019);
