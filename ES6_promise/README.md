@@ -1,1 +1,1 @@
-not empty
+In this project, the goal is to gain a comprehensive understanding of JavaScript asynchronous behavior using Promises, async/await, and try/catch. These concepts are crucial in modern JavaScript development, especially when dealing with asynchronous code, such as fetching data from APIs or performing time-consuming operations like file uploads.
