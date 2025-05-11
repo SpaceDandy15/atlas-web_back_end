@@ -4,6 +4,7 @@ import time
 from typing import Callable
 from concurrent_coroutines import wait_n
 
+
 def measure_time(n: int, max_delay: int) -> float:
 
     """
