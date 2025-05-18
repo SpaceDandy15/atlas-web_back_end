@@ -7,7 +7,7 @@ from base_caching import BaseCaching
 
 class LRUCache(BaseCaching):
     """
-    LRUCache is a caching system that discards the least recently used items first.
+    Caching system that discards the least recently used items first.
     Inherits from BaseCaching.
     """
 
