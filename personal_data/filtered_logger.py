@@ -5,7 +5,7 @@ Module for filtering sensitive data in log messages and custom logging formatter
 
 import logging
 import re
-from typing import List, Tuple
+from typing import List
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -42,12 +42,12 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields: Tuple[str, ...]):
+    def __init__(self, fields: List[str]):
         """
         Initialize the formatter with fields to redact.
 
         Args:
-            fields (Tuple[str, ...]): Fields whose values should be redacted.
+            fields (List[str]): Fields whose values should be redacted.
         """
         super().__init__(self.FORMAT)
         self.fields = fields
