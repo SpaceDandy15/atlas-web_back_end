@@ -9,8 +9,7 @@ from typing import List, Dict, Any
 
 
 class Server:
-    """Server class to paginate a database of popular baby names.
-    """
+    """Server class to paginate a database of popular baby names."""
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
@@ -36,7 +35,9 @@ class Server:
             }
         return self.__indexed_dataset
 
-    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict[str, Any]:
+    def get_hyper_index(
+        self, index: int = None, page_size: int = 10
+    ) -> Dict[str, Any]:
         """Deletion-resilient hypermedia pagination"""
         assert index is not None and 0 <= index < len(self.indexed_dataset())
         indexed_data = self.indexed_dataset()
