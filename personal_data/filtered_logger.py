@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Filtering sensitive data in log messages and custom logging formatter.
+Module for filtering sensitive data in log messages and custom logging formatter.
 """
 
 import logging
 import re
 from typing import List
+
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
@@ -63,5 +66,26 @@ class RedactingFormatter(logging.Formatter):
             str: The formatted log message with redactions applied.
         """
         original = super().format(record)
-        return filter_datum(self.fields, self.REDACTION, original,
-                            self.SEPARATOR)
+        return filter_datum(self.fields, self.REDACTION, original, self.SEPARATOR)
+
+
+def get_logger() -> logging.Logger:
+    """
+    Create and return a logger named 'user_data' with INFO level,
+    no propagation, and a StreamHandler with RedactingFormatter
+    configured with PII_FIELDS.
+
+    Returns:
+        logging.Logger: Configured logger instance.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    if not logger.hasHandlers():
+        stream_handler = logging.StreamHandler()
+        formatter = RedactingFormatter(list(PII_FIELDS))
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+
+    return logger
