@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """
-Module filtering sensitive data in log messages and custom logging formatter.
+Module for filtering sensitive data in log messages, custom logging formatter,
+and secure database connection using environment variables.
 """
 
 import logging
+import os
 import re
+import mysql.connector
 from typing import List
 
 
+# Fields considered as Personally Identifiable Information (PII)
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
@@ -66,8 +70,7 @@ class RedactingFormatter(logging.Formatter):
             str: The formatted log message with redactions applied.
         """
         original = super().format(record)
-        return filter_datum(self.fields, self.REDACTION, original,
-                            self.SEPARATOR)
+        return filter_datum(self.fields, self.REDACTION, original, self.SEPARATOR)
 
 
 def get_logger() -> logging.Logger:
@@ -90,3 +93,29 @@ def get_logger() -> logging.Logger:
         logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Connect to a secure MySQL database using credentials from environment variables.
+
+    Environment Variables:
+        PERSONAL_DATA_DB_USERNAME (default: "root")
+        PERSONAL_DATA_DB_PASSWORD (default: "")
+        PERSONAL_DATA_DB_HOST (default: "localhost")
+        PERSONAL_DATA_DB_NAME (required)
+
+    Returns:
+        mysql.connector.connection.MySQLConnection: Database connection object.
+    """
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    database = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    return mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database
+    )

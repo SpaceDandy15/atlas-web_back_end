@@ -1,12 +1,28 @@
 #!/usr/bin/env python3
 """
-Main file
+Main file to test get_db and logger setup.
 """
 
-filter_datum = __import__('filtered_logger').filter_datum
+from filtered_logger import get_db, get_logger
 
-fields = ["password", "date_of_birth"]
-messages = ["name=egg;email=eggmin@eggsample.com;password=eggcellent;date_of_birth=12/12/1986;", "name=bob;email=bob@dylan.com;password=bobbycool;date_of_birth=03/04/1993;"]
+# Test database connection
+def test_db():
+    print("Connecting to DB and querying user count...")
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT COUNT(*) FROM users;")
+    for row in cursor:
+        print("User count:", row[0])
+    cursor.close()
+    db.close()
 
-for message in messages:
-    print(filter_datum(fields, 'xxx', message, ';'))
+# Test logger
+def test_logger():
+    print("Testing logger output with PII redaction...")
+    logger = get_logger()
+    log_msg = "name=John Doe; email=john@example.com; phone=123-456-7890; ssn=111-22-3333; password=secret123;"
+    logger.info(log_msg)
+
+if __name__ == "__main__":
+    test_db()
+    test_logger()
