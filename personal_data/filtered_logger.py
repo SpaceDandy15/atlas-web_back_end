@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module for filtering sensitive data in log messages and custom logging formatter.
+Module filtering sensitive data in log messages and custom logging formatter.
 """
 
 import logging
@@ -66,7 +66,8 @@ class RedactingFormatter(logging.Formatter):
             str: The formatted log message with redactions applied.
         """
         original = super().format(record)
-        return filter_datum(self.fields, self.REDACTION, original, self.SEPARATOR)
+        return filter_datum(self.fields, self.REDACTION, original,
+                            self.SEPARATOR)
 
 
 def get_logger() -> logging.Logger:
