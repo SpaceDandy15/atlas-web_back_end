@@ -70,7 +70,8 @@ class RedactingFormatter(logging.Formatter):
             str: The formatted log message with redactions applied.
         """
         original = super().format(record)
-        return filter_datum(self.fields, self.REDACTION, original, self.SEPARATOR)
+        return filter_datum(self.fields, self.REDACTION, original,
+                            self.SEPARATOR)
 
 
 def get_logger() -> logging.Logger:
@@ -97,7 +98,8 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
-    Connect to a secure MySQL database using credentials from environment variables.
+    Connect to a secure MySQL database using credentials from environment
+    variables.
 
     Environment Variables:
         PERSONAL_DATA_DB_USERNAME (default: "root")
