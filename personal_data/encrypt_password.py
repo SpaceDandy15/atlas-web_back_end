@@ -9,10 +9,10 @@ import bcrypt
 def hash_password(password: str) -> bytes:
     """
     Hash a password using bcrypt and return the salted hash.
-    
+
     Args:
         password (str): The password string to hash.
-    
+
     Returns:
         bytes: The salted, hashed password.
     """
