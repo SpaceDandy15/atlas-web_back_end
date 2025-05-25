@@ -26,6 +26,12 @@ elif auth_type == "session_auth":
     auth = SessionAuth()
 
 
+@app.route('/api/v1/status', methods=['GET'], strict_slashes=False)
+def status():
+    """Simple status route returning plain OK"""
+    return "OK", 200
+
+
 @app.before_request
 def before_request_func():
     """
@@ -60,25 +66,19 @@ def before_request_func():
 
 @app.errorhandler(404)
 def not_found(error):
-    """
-    Handles 404 Not Found errors by returning JSON response.
-    """
+    """Handles 404 Not Found errors"""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized_error(error):
-    """
-    Handles 401 Unauthorized errors by returning JSON response.
-    """
+    """Handles 401 Unauthorized errors"""
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden_error(error):
-    """
-    Handles 403 Forbidden errors by returning JSON response.
-    """
+    """Handles 403 Forbidden errors"""
     return jsonify({"error": "Forbidden"}), 403
 
 
