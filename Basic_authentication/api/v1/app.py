@@ -23,6 +23,13 @@ elif auth_type == "auth":
 
 @app.before_request
 def before_request_func():
+     """
+    Handler that runs before each request to check authentication.
+
+    It ensures that protected paths require a valid Authorization header
+    and an authenticated user. If the request is unauthorized or forbidden,
+    it aborts with appropriate error codes (401 or 403).
+    """
     if auth is None:
         return
 
