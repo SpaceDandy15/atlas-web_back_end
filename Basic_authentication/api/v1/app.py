@@ -14,14 +14,15 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 auth_type = getenv("AUTH_TYPE")
 
-if auth_type == "auth":
+if auth_type == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
+    auth = BasicAuth()
+elif auth_type == "auth":
     from api.v1.auth.auth import Auth
     auth = Auth()
 
-
 @app.before_request
 def before_request_func():
-    """Filter each request before it's handled"""
     if auth is None:
         return
 
@@ -31,36 +32,26 @@ def before_request_func():
         '/api/v1/forbidden/'
     ]
 
-    # If the path does NOT require auth, do nothing
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    # If Authorization header missing -> 401
     if auth.authorization_header(request) is None:
         abort(401)
 
-    # If current_user returns None -> 403
     if auth.current_user(request) is None:
         abort(403)
 
-
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """ Not found handler """
     return jsonify({"error": "Not found"}), 404
-
 
 @app.errorhandler(401)
 def unauthorized_error(error):
-    """Handler for 401 Unauthorized errors"""
     return jsonify({"error": "Unauthorized"}), 401
-
 
 @app.errorhandler(403)
 def forbidden_error(error):
-    """Handler for 403 Forbidden errors"""
     return jsonify({"error": "Forbidden"}), 403
-
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
