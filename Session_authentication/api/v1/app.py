@@ -16,18 +16,21 @@ auth = None
 auth_type = getenv("AUTH_TYPE")
 
 if auth_type == "auth":
+    # Generic token-based auth
     from api.v1.auth.auth import Auth
     auth = Auth()
 elif auth_type == "basic_auth":
+    # HTTP Basic Auth
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
 elif auth_type == "session_auth":
+    # Session based auth with cookies
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
 
 
 @app.route('/api/v1/status', methods=['GET'], strict_slashes=False)
-def status():
+def status() -> tuple[str, int]:
     """Simple status route returning plain OK"""
     return "OK", 200
 
@@ -84,5 +87,5 @@ def forbidden_error(error):
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
-    port = getenv("API_PORT", "5000")
+    port = int(getenv("API_PORT", "5000"))
     app.run(host=host, port=port)
