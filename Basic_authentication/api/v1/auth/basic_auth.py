@@ -9,6 +9,7 @@ from typing import Tuple, TypeVar, Optional
 from models.user import User
 from api.v1.auth.auth import Auth
 
+
 class BasicAuth(Auth):
     """
     Basic Authentication class that extends Auth.
@@ -16,7 +17,10 @@ class BasicAuth(Auth):
     extract user credentials and return user object based on those credentials.
     """
 
-    def extract_base64_authorization_header(self, authorization_header: str) -> Optional[str]:
+
+    def extract_base64_authorization_header(
+        self, authorization_header: str
+    ) -> Optional[str]:
         """
         Extract the Base64 part of the Authorization header.
 
@@ -32,7 +36,10 @@ class BasicAuth(Auth):
             return None
         return authorization_header.split(' ', 1)[1]
 
-    def decode_base64_authorization_header(self, base64_authorization_header: str) -> Optional[str]:
+
+    def decode_base64_authorization_header(
+        self, base64_authorization_header: str
+    ) -> Optional[str]:
         """
         Decode a Base64 encoded Authorization header.
 
@@ -42,7 +49,8 @@ class BasicAuth(Auth):
         Returns:
             Optional[str]: Decoded string in UTF-8 if valid, else None.
         """
-        if base64_authorization_header is None or not isinstance(base64_authorization_header, str):
+        if base64_authorization_header is None or \
+           not isinstance(base64_authorization_header, str):
             return None
         try:
             decoded_bytes = base64.b64decode(base64_authorization_header)
@@ -50,7 +58,10 @@ class BasicAuth(Auth):
         except Exception:
             return None
 
-    def extract_user_credentials(self, decoded_base64_authorization_header: str) -> Tuple[Optional[str], Optional[str]]:
+
+    def extract_user_credentials(
+        self, decoded_base64_authorization_header: str
+    ) -> Tuple[Optional[str], Optional[str]]:
         """
         Extract user email and password from the decoded Base64 authorization header.
 
@@ -58,16 +69,21 @@ class BasicAuth(Auth):
             decoded_base64_authorization_header (str): Decoded Base64 string.
 
         Returns:
-            Tuple[Optional[str], Optional[str]]: Tuple of (email, password) if valid, else (None, None).
+            Tuple[Optional[str], Optional[str]]: Tuple of (email, password) if valid,
+            else (None, None).
         """
-        if decoded_base64_authorization_header is None or not isinstance(decoded_base64_authorization_header, str):
+        if decoded_base64_authorization_header is None or \
+           not isinstance(decoded_base64_authorization_header, str):
             return None, None
         if ':' not in decoded_base64_authorization_header:
             return None, None
         email, password = decoded_base64_authorization_header.split(':', 1)
         return email, password
 
-    def user_object_from_credentials(self, user_email: str, user_pwd: str) -> Optional[TypeVar('User')]:
+
+    def user_object_from_credentials(
+        self, user_email: str, user_pwd: str
+    ) -> Optional[TypeVar('User')]:
         """
         Retrieve a User instance based on email and password credentials.
 
@@ -92,6 +108,7 @@ class BasicAuth(Auth):
             if user.is_valid_password(user_pwd):
                 return user
         return None
+
 
     def current_user(self, request=None) -> Optional[TypeVar('User')]:
         """
