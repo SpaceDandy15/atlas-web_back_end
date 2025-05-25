@@ -26,12 +26,6 @@ elif auth_type == "session_auth":
     auth = SessionAuth()
 
 
-@app.route('/api/v1/status', methods=['GET'], strict_slashes=False)
-def status():
-    """Return status OK"""
-    return "OK\n", 200
-
-
 @app.before_request
 def before_request_func():
     """
@@ -44,16 +38,19 @@ def before_request_func():
         return
 
     excluded_paths = [
+        '/api/v1/status',
         '/api/v1/status/',
+        '/api/v1/unauthorized',
         '/api/v1/unauthorized/',
+        '/api/v1/forbidden',
         '/api/v1/forbidden/',
-        '/api/v1/auth_session/login/'  # Added this path to exclusions
+        '/api/v1/auth_session/login',
+        '/api/v1/auth_session/login/'
     ]
 
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    # If both authorization header and session cookie are missing, abort with 401
     if auth.authorization_header(request) is None and auth.session_cookie(request) is None:
         abort(401)
 
