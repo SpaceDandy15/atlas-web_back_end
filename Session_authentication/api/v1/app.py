@@ -8,12 +8,10 @@ from flask import Flask, jsonify, abort, request
 from flask_cors import CORS
 from api.v1.views import app_views
 
-# Create the Flask app
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-# Initialize authentication object
 auth = None
 auth_type = getenv("AUTH_TYPE")
 
@@ -23,15 +21,12 @@ if auth_type == "auth":
 elif auth_type == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
-
+elif auth_type == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 
 @app.before_request
 def before_request_func():
-    """
-    Handler that runs before each request to check authentication.
-    It ensures that protected paths require a valid Authorization header
-    and an authenticated user. Sets request.current_user accordingly.
-    """
     if auth is None:
         return
 
@@ -47,40 +42,20 @@ def before_request_func():
     if auth.authorization_header(request) is None:
         abort(401)
 
-    current_user = auth.current_user(request)
-    if current_user is None:
+    if auth.current_user(request) is None:
         abort(403)
 
-    # Assign current user to request context
-    request.current_user = current_user
-
-
 @app.errorhandler(404)
-def not_found(error) -> str:
-    """
-    Handler for 404 Not Found errors.
-    Returns a JSON-formatted error message.
-    """
+def not_found(error):
     return jsonify({"error": "Not found"}), 404
-
 
 @app.errorhandler(401)
 def unauthorized_error(error):
-    """
-    Handler for 401 Unauthorized errors.
-    Returns a JSON-formatted error message.
-    """
     return jsonify({"error": "Unauthorized"}), 401
-
 
 @app.errorhandler(403)
 def forbidden_error(error):
-    """
-    Handler for 403 Forbidden errors.
-    Returns a JSON-formatted error message.
-    """
     return jsonify({"error": "Forbidden"}), 403
-
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
