@@ -29,7 +29,7 @@ class BasicAuth(Auth):
         Decodes the Base64 string.
         """
         if base64_authorization_header is None or \
-                not isinstance(base64_authorization_header, str):
+           not isinstance(base64_authorization_header, str):
             return None
         try:
             decoded_bytes = base64.b64decode(base64_authorization_header)
@@ -43,7 +43,7 @@ class BasicAuth(Auth):
         Extracts user email and password from Base64 decoded string.
         """
         if decoded_base64_authorization_header is None or \
-                not isinstance(decoded_base64_authorization_header, str):
+           not isinstance(decoded_base64_authorization_header, str):
             return (None, None)
         if ':' not in decoded_base64_authorization_header:
             return (None, None)
