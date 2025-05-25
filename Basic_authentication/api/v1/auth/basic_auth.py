@@ -27,9 +27,10 @@ class BasicAuth(Auth):
             authorization_header (str): The Authorization header string.
 
         Returns:
-            Optional[str]: The Base64 encoded part of the header if valid, else None.
+            Optional[str]: The Base64 encoded part of the header if valid.
         """
-        if authorization_header is None or not isinstance(authorization_header, str):
+        if authorization_header is None or not isinstance(authorization_header,
+                                                          str):
             return None
         if not authorization_header.startswith("Basic "):
             return None
@@ -60,13 +61,13 @@ class BasicAuth(Auth):
         self, decoded_base64_authorization_header: str
     ) -> Tuple[Optional[str], Optional[str]]:
         """
-        Extract user email and password from the decoded Base64 authorization header.
+        Extract user email and password from the decoded Base64 header.
 
         Args:
             decoded_base64_authorization_header (str): Decoded Base64 string.
 
         Returns:
-            Tuple[Optional[str], Optional[str]]: Tuple of (email, password) if valid,
+            Tuple[Optional[str], Optional[str]]: Tuple of (email, password),
             else (None, None).
         """
         if decoded_base64_authorization_header is None or \
@@ -116,7 +117,7 @@ class BasicAuth(Auth):
             request (flask.Request, optional): Flask request object.
 
         Returns:
-            Optional[User]: User instance if authentication succeeds, else None.
+            Optional[User]: User instance if authentication succeeds.
         """
         authorization_header = self.authorization_header(request)
         base64_header = self.extract_base64_authorization_header(authorization_header)
