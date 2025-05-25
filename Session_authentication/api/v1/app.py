@@ -25,8 +25,15 @@ elif auth_type == "session_auth":
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
 
+
 @app.before_request
 def before_request_func():
+    """
+    Intercepts incoming requests before routing.
+    Checks if the request requires authentication and validates the
+    presence of valid authorization headers and authenticated users.
+    Aborts with appropriate HTTP error codes if authentication fails.
+    """
     if auth is None:
         return
 
@@ -45,17 +52,30 @@ def before_request_func():
     if auth.current_user(request) is None:
         abort(403)
 
+
 @app.errorhandler(404)
 def not_found(error):
+    """
+    Handles 404 Not Found errors by returning JSON response.
+    """
     return jsonify({"error": "Not found"}), 404
+
 
 @app.errorhandler(401)
 def unauthorized_error(error):
+    """
+    Handles 401 Unauthorized errors by returning JSON response.
+    """
     return jsonify({"error": "Unauthorized"}), 401
+
 
 @app.errorhandler(403)
 def forbidden_error(error):
+    """
+    Handles 403 Forbidden errors by returning JSON response.
+    """
     return jsonify({"error": "Forbidden"}), 403
+
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
