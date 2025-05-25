@@ -17,7 +17,6 @@ class BasicAuth(Auth):
     extract user credentials and return user object based on those credentials.
     """
 
-
     def extract_base64_authorization_header(
         self, authorization_header: str
     ) -> Optional[str]:
@@ -35,7 +34,6 @@ class BasicAuth(Auth):
         if not authorization_header.startswith("Basic "):
             return None
         return authorization_header.split(' ', 1)[1]
-
 
     def decode_base64_authorization_header(
         self, base64_authorization_header: str
@@ -58,7 +56,6 @@ class BasicAuth(Auth):
         except Exception:
             return None
 
-
     def extract_user_credentials(
         self, decoded_base64_authorization_header: str
     ) -> Tuple[Optional[str], Optional[str]]:
@@ -79,7 +76,6 @@ class BasicAuth(Auth):
             return None, None
         email, password = decoded_base64_authorization_header.split(':', 1)
         return email, password
-
 
     def user_object_from_credentials(
         self, user_email: str, user_pwd: str
@@ -108,7 +104,6 @@ class BasicAuth(Auth):
             if user.is_valid_password(user_pwd):
                 return user
         return None
-
 
     def current_user(self, request=None) -> Optional[TypeVar('User')]:
         """
