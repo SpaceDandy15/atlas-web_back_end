@@ -26,6 +26,12 @@ elif auth_type == "session_auth":
     auth = SessionAuth()
 
 
+@app.route('/api/v1/status', methods=['GET'], strict_slashes=False)
+def status():
+    """Return status OK"""
+    return "OK\n", 200
+
+
 @app.before_request
 def before_request_func():
     """
