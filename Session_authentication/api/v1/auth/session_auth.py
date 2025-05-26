@@ -4,7 +4,8 @@ Session authentication module.
 """
 
 import uuid
-from models.user import User  # Import User model here
+from os import getenv
+from models.user import User
 
 
 class SessionAuth:
@@ -51,7 +52,7 @@ class SessionAuth:
 
     def session_cookie(self, request=None) -> str:
         """
-        Retrieves the session cookie value from the request.
+        Retrieve the session cookie value from the request.
 
         Args:
             request: Flask request object.
@@ -62,14 +63,7 @@ class SessionAuth:
         if request is None:
             return None
 
-        session_name = " _my_session_id"  # or get from env/session_name
-        # Better: session_name can be set as class attribute
-
-        # environment variable SESSION_NAME is set in the instructions
-
-        from os import getenv
         session_name = getenv("SESSION_NAME", "_my_session_id")
-
         return request.cookies.get(session_name)
 
     def current_user(self, request=None) -> User:
