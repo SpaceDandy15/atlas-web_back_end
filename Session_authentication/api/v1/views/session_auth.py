@@ -7,6 +7,9 @@ from os import getenv
 from flask import Blueprint, request, jsonify, abort, make_response
 from models.user import User
 from api.v1.auth.session_auth import SessionAuth
+from flask import abort, jsonify, request
+from api.v1.app import auth
+
 
 auth_session = Blueprint('auth_session', __name__)
 session_auth = SessionAuth()
@@ -70,3 +73,10 @@ def logout():
     response = make_response(jsonify({}), 200)
     response.delete_cookie(session_name)
     return response
+
+@app_views.route('/auth_session/logout', methods=['DELETE'], strict_slashes=False)
+def logout():
+    """ Deletes the session / logs out the user """
+    if not auth.destroy_session(request):
+        abort(404)
+    return jsonify({}), 200
