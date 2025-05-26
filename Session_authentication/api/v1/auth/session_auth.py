@@ -35,7 +35,6 @@ class SessionAuth:
         self.user_id_by_session_id[session_id] = user_id
         return session_id
 
-
     def user_id_for_session_id(self, session_id: str = None) -> str:
         """
         Return the User ID associated with a given Session ID.
@@ -51,10 +50,11 @@ class SessionAuth:
 
         return self.user_id_by_session_id.get(session_id)
 
-
     def session_cookie(self, request=None) -> str:
         """
         Retrieve the session cookie value from the request.
+
+        This honors both HBNB_YELP_SESSION_NAME and SESSION_NAME env vars.
 
         Args:
             request: Flask request object.
@@ -65,9 +65,11 @@ class SessionAuth:
         if request is None:
             return None
 
-        session_name = getenv("SESSION_NAME", "_my_session_id")
+        session_name = getenv(
+            "HBNB_YELP_SESSION_NAME",
+            getenv("SESSION_NAME", "_my_session_id")
+        )
         return request.cookies.get(session_name)
-
 
     def current_user(self, request=None) -> User:
         """
@@ -92,10 +94,9 @@ class SessionAuth:
 
         return User.get(user_id)
 
-
     def destroy_session(self, request=None) -> bool:
         """
-        Delete the user session / logout.
+        Deletes the user session / logout.
 
         Args:
             request: Flask request object.
