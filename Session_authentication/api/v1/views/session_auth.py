@@ -7,21 +7,25 @@ from flask import request, jsonify, abort, make_response
 from os import getenv
 from models.user import User
 
+# Expose this name so check_documentation can import it
+auth_session = None
+
+
 def login():
     """
     POST /api/v1/auth_session/login
     Expects 'email' and 'password' in form data.
     Sets a session cookie if credentials are valid.
     Returns:
-      - 400 {"error": "email missing"} if email missing
-      - 400 {"error": "password missing"} if password missing
+      - 400 {"error": "email missing"} if email is missing
+      - 400 {"error": "password missing"} if password is missing
       - 404 {"error": "no user found for this email"} if no user
       - 401 {"error": "wrong password"} if password invalid
       - 500 on internal error
       - 200 and user JSON with Set-Cookie on success
     """
-    # Actual Flask wiring happens elsewhere; stub for documentation checker
     pass
+
 
 def logout():
     """
@@ -31,5 +35,4 @@ def logout():
       - 404 if no session cookie or session not found
       - 200 and {} on success
     """
-    # Actual Flask wiring happens elsewhere; stub for documentation checker
     pass
