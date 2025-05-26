@@ -6,16 +6,21 @@ Session authentication routes.
 from os import getenv
 from flask import Blueprint, request, jsonify, abort, make_response
 from models.user import User
-from session_auth import SessionAuth  # adjust import as needed
-
+from api.v1.auth.session_auth import SessionAuth
 
 auth_session = Blueprint('auth_session', __name__)
 session_auth = SessionAuth()
 
 
-@auth_session.route('/api/v1/auth_session/login', methods=['POST'])
+@auth_session.route('/api/v1/auth_session/login', methods=['POST'],
+                    strict_slashes=False)
 def login():
-    """Login route to create a session for valid user credentials."""
+    """
+    Login route to create a session for valid user credentials.
+
+    Expects 'email' and 'password' form data.
+    Sets a session cookie if credentials are valid.
+    """
     email = request.form.get('email')
     password = request.form.get('password')
 
@@ -44,9 +49,14 @@ def login():
     return response
 
 
-@auth_session.route('/api/v1/auth_session/logout', methods=['DELETE'])
+@auth_session.route('/api/v1/auth_session/logout', methods=['DELETE'],
+                    strict_slashes=False)
 def logout():
-    """Logout route to destroy the user session."""
+    """
+    Logout route to destroy the user session.
+
+    Deletes the session cookie and destroys the session.
+    """
     session_name = getenv('SESSION_NAME', '_my_session_id')
     session_id = request.cookies.get(session_name)
 
