@@ -62,11 +62,10 @@ class SessionAuth:
         if request is None:
             return None
 
-        session_name = " _my_session_id"  # or dynamically get from env/session_name variable
-        # Better: session_name can be set as class attribute if needed or retrieved from env
+        session_name = " _my_session_id"  # or get from env/session_name variable
+        # Better: session_name can be set as class attribute or retrieved from env
 
-        # But since environment variable SESSION_NAME is set in the instructions,
-        # you can do: from os import getenv; session_name = getenv("SESSION_NAME", "_my_session_id")
+        # environment variable SESSION_NAME is set in the instructions
 
         from os import getenv
         session_name = getenv("SESSION_NAME", "_my_session_id")
