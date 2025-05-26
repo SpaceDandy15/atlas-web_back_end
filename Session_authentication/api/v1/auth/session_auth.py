@@ -13,7 +13,7 @@ class SessionAuth:
     SessionAuth class manages user sessions using session IDs.
 
     It stores session_id/user_id pairs in memory and provides methods to create
-    sessions and retrieve user IDs from session IDs.
+    sessions, retrieve user IDs from session IDs, and destroy sessions.
     """
 
     user_id_by_session_id = {}
@@ -35,6 +35,7 @@ class SessionAuth:
         self.user_id_by_session_id[session_id] = user_id
         return session_id
 
+
     def user_id_for_session_id(self, session_id: str = None) -> str:
         """
         Return the User ID associated with a given Session ID.
@@ -49,6 +50,7 @@ class SessionAuth:
             return None
 
         return self.user_id_by_session_id.get(session_id)
+
 
     def session_cookie(self, request=None) -> str:
         """
@@ -65,6 +67,7 @@ class SessionAuth:
 
         session_name = getenv("SESSION_NAME", "_my_session_id")
         return request.cookies.get(session_name)
+
 
     def current_user(self, request=None) -> User:
         """
@@ -87,24 +90,32 @@ class SessionAuth:
         if user_id is None:
             return None
 
-        user = User.get(user_id)
-        return user
+        return User.get(user_id)
+
+
     def destroy_session(self, request=None) -> bool:
-    """ Deletes the user session / logout """
-    if request is None:
+        """
+        Delete the user session / logout.
+
+        Args:
+            request: Flask request object.
+
+        Returns:
+            bool: True if the session was deleted, False otherwise.
+        """
+        if request is None:
+            return False
+
+        session_id = self.session_cookie(request)
+        if session_id is None:
+            return False
+
+        user_id = self.user_id_for_session_id(session_id)
+        if user_id is None:
+            return False
+
+        if session_id in self.user_id_by_session_id:
+            del self.user_id_by_session_id[session_id]
+            return True
+
         return False
-
-    session_id = self.session_cookie(request)
-    if session_id is None:
-        return False
-
-    user_id = self.user_id_for_session_id(session_id)
-    if user_id is None:
-        return False
-
-    # Delete the session ID key from the dictionary
-    if session_id in self.user_id_by_session_id:
-        del self.user_id_by_session_id[session_id]
-        return True
-
-    return False
