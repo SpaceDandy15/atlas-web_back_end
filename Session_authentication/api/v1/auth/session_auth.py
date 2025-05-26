@@ -62,8 +62,8 @@ class SessionAuth:
         if request is None:
             return None
 
-        session_name = " _my_session_id"  # or get from env/session_name variable
-        # Better: session_name can be set as class attribute or retrieved from env
+        session_name = " _my_session_id"  # or get from env/session_name
+        # Better: session_name can be set as class attribute
 
         # environment variable SESSION_NAME is set in the instructions
 
