@@ -1,91 +1,62 @@
 #!/usr/bin/env python3
 """
-Session authentication module.
+Session authentication routes.
 """
 
-import uuid
 from os import getenv
+from flask import Blueprint, request, jsonify, abort, make_response
 from models.user import User
+from session_auth import SessionAuth  # adjust import as needed
 
 
-class SessionAuth:
-    """
-    SessionAuth class manages user sessions using session IDs.
+auth_session = Blueprint('auth_session', __name__)
+session_auth = SessionAuth()
 
-    It stores session_id/user_id pairs in memory and provides methods to create
-    sessions and retrieve user IDs from session IDs.
-    """
 
-    user_id_by_session_id = {}
+@auth_session.route('/api/v1/auth_session/login', methods=['POST'])
+def login():
+    """Login route to create a session for valid user credentials."""
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-    def create_session(self, user_id: str = None) -> str:
-        """
-        Create a Session ID for a given user_id.
+    if not email:
+        return jsonify({"error": "email missing"}), 400
 
-        Args:
-            user_id (str): The user ID to create a session for.
+    if not password:
+        return jsonify({"error": "password missing"}), 400
 
-        Returns:
-            str or None: The session ID if user_id is valid, else None.
-        """
-        if user_id is None or not isinstance(user_id, str):
-            return None
+    users = User.search({"email": email})
+    if not users:
+        return jsonify({"error": "no user found for this email"}), 404
 
-        session_id = str(uuid.uuid4())
-        self.user_id_by_session_id[session_id] = user_id
-        return session_id
+    user = users[0]
 
-    def user_id_for_session_id(self, session_id: str = None) -> str:
-        """
-        Return the User ID associated with a given Session ID.
+    if not user.is_valid_password(password):
+        return jsonify({"error": "wrong password"}), 401
 
-        Args:
-            session_id (str): The session ID.
+    session_id = session_auth.create_session(user.id)
+    if not session_id:
+        abort(500)
 
-        Returns:
-            str or None: The user ID if session ID exists, else None.
-        """
-        if session_id is None or not isinstance(session_id, str):
-            return None
+    response = jsonify(user.to_dict())
+    session_name = getenv('SESSION_NAME', '_my_session_id')
+    response.set_cookie(session_name, session_id)
+    return response
 
-        return self.user_id_by_session_id.get(session_id)
 
-    def session_cookie(self, request=None) -> str:
-        """
-        Retrieve the session cookie value from the request.
+@auth_session.route('/api/v1/auth_session/logout', methods=['DELETE'])
+def logout():
+    """Logout route to destroy the user session."""
+    session_name = getenv('SESSION_NAME', '_my_session_id')
+    session_id = request.cookies.get(session_name)
 
-        Args:
-            request: Flask request object.
+    if not session_id:
+        abort(404)
 
-        Returns:
-            str or None: The value of the session cookie, or None if not found.
-        """
-        if request is None:
-            return None
+    success = session_auth.destroy_session(session_id)
+    if not success:
+        abort(404)
 
-        session_name = getenv("SESSION_NAME", "_my_session_id")
-        return request.cookies.get(session_name)
-
-    def current_user(self, request=None) -> User:
-        """
-        Return the User instance based on the session cookie.
-
-        Args:
-            request: Flask request object.
-
-        Returns:
-            User instance if user found, else None.
-        """
-        if request is None:
-            return None
-
-        session_id = self.session_cookie(request)
-        if session_id is None:
-            return None
-
-        user_id = self.user_id_for_session_id(session_id)
-        if user_id is None:
-            return None
-
-        user = User.get(user_id)
-        return user
+    response = make_response(jsonify({}), 200)
+    response.delete_cookie(session_name)
+    return response
