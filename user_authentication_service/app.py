@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify, abort, make_response
 from auth import Auth
 
 app = Flask(__name__)
-auth = Auth()
+AUTH = Auth()  # Exported as AUTH so 0-main.py can import it
 
 
 @app.route('/sessions', methods=['POST'])
@@ -19,10 +19,10 @@ def login():
     if not email or not password:
         abort(400)
 
-    if not auth.valid_login(email, password):
+    if not AUTH.valid_login(email, password):
         abort(401)
 
-    session_id = auth.create_session(email)
+    session_id = AUTH.create_session(email)
     if not session_id:
         abort(401)
 
