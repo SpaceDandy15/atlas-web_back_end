@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
 """
-Main file
+Main file for testing user registration and valid login
 """
 from auth import Auth
 
-email = 'bob@bob.com'
-password = 'MyPwdOfBob'
+email = "bob@bob.com"
+password = "MyPwdOfBob"
+
 auth = Auth()
 
-auth.register_user(email, password)
+# Register the user
+try:
+    user = auth.register_user(email, password)
+    print("successfully created a new user!")
+except ValueError:
+    print("user already exists")
 
-print(auth.valid_login(email, password))         # True
-print(auth.valid_login(email, "WrongPwd"))       # False
-print(auth.valid_login("unknown@email", password)) # False
+# Check valid login
+if auth.valid_login(email, password):
+    print("valid_login returns True on existing email with correct password")
+else:
+    print("valid_login returns False on existing email with correct password")
