@@ -45,8 +45,7 @@ class Auth:
         """
         try:
             user = self._db.find_user_by(email=email)
-            return bcrypt.checkpw(password.encode('utf-8'),
-                                  user.hashed_password)
+            return bcrypt.checkpw(password.encode('utf-8'), user.hashed_password)
         except Exception:
             return False
 
@@ -63,8 +62,7 @@ class Auth:
         except NoResultFound:
             return None
 
-    def get_user_from_session_id(self,
-                                 session_id: Optional[str]) -> Optional[User]:
+    def get_user_from_session_id(self, session_id: Optional[str]) -> Optional[User]:
         """
         Retrieve a user based on a session ID.
         Args:
@@ -91,3 +89,17 @@ class Auth:
             self._db.update_user(user_id, session_id=None)
         except Exception:
             pass
+
+    def get_reset_password_token(self, email: str) -> str:
+        """
+        Generate a reset password token for the user with the given email.
+        Raises ValueError if the user does not exist.
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+        except NoResultFound:
+            raise ValueError("User not found")
+
+        reset_token = _generate_uuid()
+        self._db.update_user(user.id, reset_token=reset_token)
+        return reset_token
