@@ -45,7 +45,8 @@ class Auth:
         """
         try:
             user = self._db.find_user_by(email=email)
-            return bcrypt.checkpw(password.encode('utf-8'), user.hashed_password)
+            return bcrypt.checkpw(password.encode('utf-8'),
+                                  user.hashed_password)
         except Exception:
             return False
 
@@ -62,7 +63,8 @@ class Auth:
         except NoResultFound:
             return None
 
-    def get_user_from_session_id(self, session_id: Optional[str]) -> Optional[User]:
+    def get_user_from_session_id(self,
+                                 session_id: Optional[str]) -> Optional[User]:
         """
         Retrieve a user based on a session ID.
         Args:
