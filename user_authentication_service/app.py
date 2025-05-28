@@ -7,7 +7,7 @@ from flask import Flask, request, jsonify, abort, make_response, redirect
 from auth import Auth
 
 app = Flask(__name__)
-AUTH = Auth()  # Exported as AUTH so 0-main.py can import it
+AUTH = Auth()  # Exported as AUTH so 1-main.py can import it
 
 
 @app.route('/sessions', methods=['POST'])
@@ -45,6 +45,21 @@ def logout():
 
     AUTH.destroy_session(user.id)
     return redirect('/')
+
+
+@app.route('/profile', methods=['GET'])
+def profile():
+    """
+    GET /profile route to get the user's email from a valid session.
+    If session_id is invalid or user not found, abort with 403.
+    """
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
+
+    if user is None:
+        abort(403)
+
+    return jsonify({"email": user.email})
 
 
 if __name__ == "__main__":
