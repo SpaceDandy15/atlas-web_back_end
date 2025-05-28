@@ -23,7 +23,8 @@ class Auth:
 
     def _hash_password(self, password: str) -> bytes:
         """Hashes a password using bcrypt."""
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        return bcrypt.hashpw(password.encode('utf-8'),
+                             bcrypt.gensalt())
 
     def register_user(self, email: str, password: str) -> User:
         """
@@ -48,3 +49,16 @@ class Auth:
                                   user.hashed_password)
         except Exception:
             return False
+
+    def create_session(self, email: str) -> str | None:
+        """
+        Create a new session ID for a user identified by email.
+        Return the session ID or None if user not found.
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            session_id = _generate_uuid()
+            self._db.update_user(user.id, session_id=session_id)
+            return session_id
+        except NoResultFound:
+            return None
