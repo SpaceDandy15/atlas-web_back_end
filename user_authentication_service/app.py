@@ -1,43 +1,35 @@
 #!/usr/bin/env python3
 """
-auth.py - Authentication service
+Flask app for user authentication service
 """
 
-import bcrypt
-from db import DB
-from user import User
-from sqlalchemy.orm.exc import NoResultFound
+from flask import Flask, request, jsonify, abort, make_response
+from auth import Auth
+
+app = Flask(__name__)
+auth = Auth()
 
 
-class Auth:
-    """Auth class to interact with the authentication database."""
+@app.route('/sessions', methods=['POST'])
+def login():
+    """POST /sessions route to log in a user and set a session_id cookie."""
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-    def __init__(self):
-        self._db = DB()
+    if not email or not password:
+        abort(400)
 
-    def _hash_password(self, password: str) -> bytes:
-        """Hashes a password using bcrypt."""
-        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    if not auth.valid_login(email, password):
+        abort(401)
 
-    def register_user(self, email: str, password: str) -> User:
-        """
-        Register a new user.
-        If user already exists, raise a ValueError.
-        """
-        try:
-            self._db.find_user_by(email=email)
-            raise ValueError(f"User {email} already exists")
-        except NoResultFound:
-            hashed_pw = self._hash_password(password)
-            return self._db.add_user(email, hashed_pw)
+    session_id = auth.create_session(email)
+    if not session_id:
+        abort(401)
 
-    def valid_login(self, email: str, password: str) -> bool:
-        """
-        Validate user credentials.
-        Returns True if password is correct for the given email.
-        """
-        try:
-            user = self._db.find_user_by(email=email)
-            return bcrypt.checkpw(password.encode('utf-8'), user.hashed_password)
-        except Exception:
-            return False
+    response = make_response(jsonify({"email": email, "message": "logged in"}))
+    response.set_cookie("session_id", session_id)
+    return response
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
