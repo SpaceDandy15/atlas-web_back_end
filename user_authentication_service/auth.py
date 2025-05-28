@@ -5,6 +5,7 @@ auth.py - Authentication service
 
 import bcrypt
 import uuid
+from typing import Optional
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
@@ -23,8 +24,7 @@ class Auth:
 
     def _hash_password(self, password: str) -> bytes:
         """Hashes a password using bcrypt."""
-        return bcrypt.hashpw(password.encode('utf-8'),
-                             bcrypt.gensalt())
+        return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
     def register_user(self, email: str, password: str) -> User:
         """
@@ -50,7 +50,7 @@ class Auth:
         except Exception:
             return False
 
-    def create_session(self, email: str) -> str | None:
+    def create_session(self, email: str) -> Optional[str]:
         """
         Create a new session ID for a user identified by email.
         Return the session ID or None if user not found.
