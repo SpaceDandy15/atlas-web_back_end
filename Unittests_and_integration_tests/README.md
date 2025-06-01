@@ -14,3 +14,8 @@ Integration tests are typically end-to-end.
 External calls (HTTP requests, file I/O, databases, etc.) are sometimes mocked, but more often left real if part of the system’s workflow.
 
 They help ensure that the system behaves as expected in a real-world scenario, not just in isolation.
+
+Run tests with:
+
+```bash
+python3 -m unittest test_utils.py
