@@ -1,69 +1,49 @@
 #!/usr/bin/env python3
-"""Basic Redis caching module"""
+"""Basic Redis caching module with call counting"""
 
 import redis
 import uuid
 from typing import Union, Callable, Optional, Any
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        key = method.__qualname__
+        new_count = self._redis.incr(key)
+        print(f"[DEBUG] Incremented {key}: {new_count}")
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
-    """Cache class for storing and retrieving data in Redis"""
-
     def __init__(self):
-        """Initialize Redis client and flush existing data"""
-        self._redis = redis.Redis()
+        self._redis = redis.Redis(host='localhost', port=6379, db=0)
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
-        """
-        Store the given data in Redis with a randomly generated key.
-
-        Args:
-            data: The data to store
-
-        Returns:
-            str: The key used to store the data
-        """
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
 
     def get(self, key: str, fn: Optional[Callable] = None) -> Any:
-        """
-        Retrieve data from Redis and optionally apply a conversion function.
-
-        Args:
-            key: Redis key to retrieve
-            fn: Optional function to convert the result
-
-        Returns:
-            The retrieved (and possibly converted) value, or None if key doesn't exist
-        """
         value = self._redis.get(key)
         if value is None:
             return None
         return fn(value) if fn else value
 
-    def get_str(self, key: str) -> str:
-        """
-        Retrieve data from Redis and decode as UTF-8 string.
 
-        Args:
-            key: Redis key to retrieve
+if __name__ == "__main__":
+    cache = Cache()
+    print("Qualname:", cache.store.__qualname__)
 
-        Returns:
-            Decoded string
-        """
-        return self.get(key, fn=lambda d: d.decode("utf-8"))
+    cache.store(b"first")
+    count = cache.get(cache.store.__qualname__)
+    print(f"Count after 1 store: {count} (int: {int(count)})")
 
-    def get_int(self, key: str) -> int:
-        """
-        Retrieve data from Redis and convert to integer.
-
-        Args:
-            key: Redis key to retrieve
-
-        Returns:
-            Integer value
-        """
-        return self.get(key, fn=int)
+    cache.store(b"second")
+    cache.store(b"third")
+    count = cache.get(cache.store.__qualname__)
+    print(f"Count after 3 stores: {count} (int: {int(count)})")
