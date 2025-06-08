@@ -1,5 +1,12 @@
 DELIMITER $$
 
+-- Procedure: ComputeAverageScoreForUser
+-- Purpose: Calculate and update the average correction score for a specific user.
+-- Input:
+--   p_user_id INT - the ID of the user whose average score is computed
+-- Steps:
+--   1. Compute the average of all scores in the corrections table for the given user.
+--   2. Update the users table to set the average_score field to the computed average.
 CREATE PROCEDURE ComputeAverageScoreForUser(
     IN p_user_id INT  -- Input parameter: ID of the user to compute average score for
 )
