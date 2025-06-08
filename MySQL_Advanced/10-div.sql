@@ -1,12 +1,12 @@
--- Create a function SafeDiv that divides 'a' by 'b'
--- Returns 0 if 'b' is 0 to avoid division by zero errors
+-- Creates a function SafeDiv(a, b) that safely divides two integers.
+-- Returns 0 if the divisor (b) is 0 to avoid division by zero errors.
+-- Otherwise, returns the integer division result of a DIV b.
 
 DELIMITER $$
 
-CREATE FUNCTION SafeDiv(a INT, b INT) RETURNS FLOAT
+CREATE FUNCTION SafeDiv(a INT, b INT) RETURNS INT
 BEGIN
-    -- If b is zero, return 0; otherwise, return the division result
-    RETURN IF(b = 0, 0, a / b);
+    RETURN IF(b = 0, 0, a DIV b);
 END$$
 
 DELIMITER ;
