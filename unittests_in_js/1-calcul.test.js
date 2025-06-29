@@ -21,12 +21,12 @@ describe('calculateNumber()', () => {
       assert.strictEqual(calculateNumber('SUBTRACT', 1.4, 4.5), -4);
     });
 
-    it('should return 0 for (2.5, 2.4)', () => {
-      assert.strictEqual(calculateNumber('SUBTRACT', 2.5, 2.4), 0);
+    it('should return 1 for (2.5, 2.4)', () => {
+      assert.strictEqual(calculateNumber('SUBTRACT', 2.5, 2.4), 1);
     });
 
-    it('should return 2 for (3.6, 1.2)', () => {
-      assert.strictEqual(calculateNumber('SUBTRACT', 3.6, 1.2), 2);
+    it('should return 3 for (3.6, 1.2)', () => {
+      assert.strictEqual(calculateNumber('SUBTRACT', 3.6, 1.2), 3);
     });
   });
 
@@ -39,8 +39,8 @@ describe('calculateNumber()', () => {
       assert.strictEqual(calculateNumber('DIVIDE', 1.4, 0), 'Error');
     });
 
-    it('should return 2 for (4.5, 1.9)', () => {
-      assert.strictEqual(calculateNumber('DIVIDE', 4.5, 1.9), 2);
+    it('should return 2.5 for (4.5, 1.9)', () => {
+      assert.strictEqual(calculateNumber('DIVIDE', 4.5, 1.9), 2.5);
     });
   });
 
