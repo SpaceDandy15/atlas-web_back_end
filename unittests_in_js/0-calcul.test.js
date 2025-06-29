@@ -1,7 +1,7 @@
 // 0-calcul.test.js
 
 const assert = require('assert');
-const calculateNumber = require('../0-calcul');
+const calculateNumber = require('./0-calcul');
 
 describe('calculateNumber', function () {
   it('should return 4 when passed (1, 3)', function () {
